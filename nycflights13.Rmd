@@ -8,8 +8,7 @@ output:
 # Setup
 
 ```{r include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, max.print=100)
-options(scipen=999)
+knitr::opts_chunk$set(echo = TRUE, max.print=100)  # this setting affects the printing of tables
 library(tidyverse)
 library(nycflights13)
 ```
@@ -28,7 +27,8 @@ weather <- nycflights13::weather # This statement is maybe less confusing
 flights <- nycflights13::flights # This statement is maybe less confusing
 ```
 
-# Airlines
+# Analyse data
+## Airlines
 Inspect the airlines data via `View` and print the first 5 rows.
 
 > Note: It is helpful to `View` the data in interactive analysis, but afterwards delete it from your script or Rmd file.
@@ -37,8 +37,8 @@ Inspect the airlines data via `View` and print the first 5 rows.
 
 ```
 
-# Airports 
-Inspect the airports data via `View`. It contains the column `alt` which is the altitude of the airport in feet. Replace `alt` by the corresponding altitude in meters (meter = feet * 3.28084). Use the `mutate` function for this operation. You have to assign again to airports in order to change the data (not only print the changes).
+## Airports 
+Inspect the airports data via `View`. It contains the column `alt` which is the altitude of the airport in feet. Replace `alt` by the corresponding altitude in meters (meter = feet * 3.28084). Use the `mutate` function for this operation. You have to assign again to `airports` in order to change the data (not only print the changes).
 ```{r}
 # airports <- airports %>% mutate(alt = .....)
 ```
@@ -52,27 +52,24 @@ Filter for all airports which are located at an altitude lower than sea level
 ```{r}
 ```
 
-# Weather
+## Weather
 Use `View` to inspect the data and print the first 5 rows. Does the data only cover the airports in New York, or also the weather data at destination airports? 
 ```{r}
-head(weather)
+
 ```
 
 
-Let's change the units of the weather data to European standards:  
+Let's change the units of the weather data to European standards.  
 
 - Temperature (`temp`) and dew point (`dewp`): Celsius = (Fahrenheit - 32) * 5 / 9 
 - Visibility (`visib`): kilometer = miles / 1.60934
 - Wind speed (`wind_speed`): kilometer/hour = (miles/hour) /1.60934
 - Precipitation (`precip`): millimeter = inches * 20.54
 
+>Again, use the `mutate` function and assign the result back to `weather` in order to save the changes to the data.
+
 ```{r}
-weather <- weather %>% 
-  mutate(temp = (temp - 32) * 5/9, 
-         dewp = (dewp - 32) * 5/9, 
-         visib = visib / 1.60934, 
-         wind_speed = wind_speed / 1.60934, 
-         precip = precip * 20.54)
+
 ```
 
 After such a transforation we should check whether values are plausbile:
@@ -86,31 +83,19 @@ What was the 2013 average of `temp`, `wind_speed`, and `visib` at the JFK airpor
 
 What was the *monthly* average of `temp`, `wind_speed`, and `visib` at the JFK airport?
 ```{r}
-weather %>% 
-  filter(origin == "JFK") %>%
-  group_by(month) %>%
-  summarise(mean(temp, na.rm = TRUE),
-            mean(visib, na.rm = TRUE),
-            mean(wind_speed, na.rm = TRUE))
+
 ```
 
 What was the minimum `temp`, the maximum `temp`, and the total amount of `precip` at each of the 3 airports in December 2013? 
 
 ```{r}
-weather %>% 
-  filter(month == 12) %>%
-  group_by(origin) %>% 
-  summarise(precip = sum(precip),
-            min_temp = min(temp, na.rm = TRUE),
-            max_temp = max(temp, na.rm = TRUE))
 
 ```
 
 
-# Planes
+## Planes
 Look at the data via `View` and print the first 5 rows.
 ```{r}
-head(planes)
 ```
 
 Count the numer of planes per `manufacturer` and sort in descending order? 
@@ -118,55 +103,34 @@ Count the numer of planes per `manufacturer` and sort in descending order?
 > You can either count via `summarise(n())`, or more easily via `count()`.
 
 ```{r}
-planes %>% 
-  group_by(manufacturer) %>%
-  count() %>%
-  arrange(-n)
 ```
 
 Count the number of planes per `manufacturer` and `model` and again sort in descending order
 ```{r}
-planes %>% 
-  group_by(manufacturer, model) %>%
-  count() %>%
-  arrange(-n)
 ```
 
 Calculate per manufacturer: 1. number of planes, 2. average number of `seats`, 3. average number of `engines`, 4. average `year` when the planes where manufactured. And again order in descending order of the number of planes
 
 ```{r}
-planes %>% 
-  group_by(manufacturer) %>%
-  summarise(n = n(),
-            year = mean(year, na.rm = TRUE),
-            seats = mean(seats),
-            engines = mean(engines)
-            ) %>%
-  arrange(-n)
+
 ```
 
 
-# Flights
-## Inspect
+## Flights
 Inspect the flights data with `View` and print the first 5 rows.
 ```{r}
-head(flights)
 ```
 
 Let's analyse how take-off times at NYC airports vary in the course of the day. Count the total number of flights (of the whole year) per `hour` of departure.
 ```{r}
-flights %>% 
-  group_by(hour) %>% 
-  summarise(n = n(), 
-            delay = mean(dep_delay, na.rm = TRUE))
 ```
 
 Count the number of flights by destionation airport (`dest`) and arrange them in descending order.
 ```{r}
-flights %>% group_by(dest) %>% count() %>% arrange(-n)
+
 ```
 
-## Join
+# Join datasets
 It is more convenient to have the full names of the destination airports rather than airport codes. So let's join flights data and airport data. We have to address two issues: 
 
 1. **Join variable**: The variable through which the join is supposed to happen has different names in the two datasets. It is called `dest` in the flights data, and `faa` in the airports data. Renaming the variables in the orignal data sets is not a good option because this would make the variable names less informative. Use `help(join)` to find out how we can carry out this join.
@@ -175,31 +139,42 @@ It is more convenient to have the full names of the destination airports rather 
 
 In general, an **inner join** is the strictest join type. If the codes in the airport and flights data don't match, we will end up with no data at all. However, if they match perfectly, this would be an efficient and clean solution. We should prefer an inner join if possible. An **outer join** is the most conservative join type. We don't run the risk of losing any information. But the joined data might contain a lot of missing values with respect to flight and airport data. A **left join** (and by analogy the **right join**) lies somewhere in between. It preserves all data available of the first data (let's say `flights`), but may lose information of the second data (`airports`) if there were no flights to some of the airports in 2013. 
 
+## Inner join
+
 A suggestion is to start with an inner join. Then we evaluate whether we lost important information through this inner join. If no, then we are just fine. If yes, we can consider a left join that preserves all flights and adds the available airport metadata. The occasions / questions where we need a full join are relatively rare.
 
 ```{r}
-# df <- flights %>% inner_join(airports, by = ...)
+# df_inner <- flights %>% inner_join(airports, by = ...)
 ```
 
-Did we lose information on flights. If yes, replace the inner join by a left join. 
+## Left join
+Did we lose information on flights. If yes, replace the inner join by a left join (where x = `flights` and y = `airports`). 
 
 ```{r}
-# df <- flights %>% ...
-df <- flights %>% left_join(airports, by = c("dest" = "faa"))
+
 ```
 
-What about a right join? In datawarehouse terms, our datasets form a **star schema** (see picture below) with 1 **fact table** `flights` in the center and multiple **dimension tables** (`airports`, `weather`, ...) in the margins. The fact table contains numeric values on events and foreign keys to the metadata contained in the dimensional data. Generally, fact tables are more interesting from an analytical perspective. Thus, unless we have a airport-centered question, we should prefer the left join over the right join.
+## Right join
+**What about a right join** (where x = `flights` and y = `airports`)? 
+
+Do a right join and look at the data afterwards. How many rows does the data have? Are there missing values? How do you judge this join type? How useful is it in our context?
+
+```{r}
+
+```
+
+A general thought on the decision between left and right join: In datawarehouse terms, the 5 datasets form a **star schema** (see picture below) with 1 **fact table** `flights` in the center and multiple **dimension tables** (`airports`, `weather`, ...) at the margin. The fact table contains numeric values on flight events, and it contains foreign keys that connect with the dimension tables. Generally, fact tables are more interesting from an analytical perspective. Thus, we would usually chose the join type which preserves the full fact table `flights` at the cost of potentially not having all airport metadata, rather than the other way round. In short: we should stick with the left join.
 
 ![](img/table_relationships.PNG){width=70%}
 
 
-**Is it worth all that joining?** Let's rerun our pevious analysis: Count the number of flights by destionation airport (`dest`) and the corresponding `name` and arrange them in descending order.
+**Is it worth all that joining?** Let's rerun our pevious analysis using the joined data - the one that you prefer. Count the number of flights by destionation airport (`dest`) and the corresponding `name` and arrange them in descending order.
 ```{r}
-df %>% group_by(dest, name) %>% count() %>% arrange(-n)
+
 ```
 
-## Even more joins
-As we see in the figure above, we can join the data in many more ways. Practice joining! Start by asking yourself a question that relates to 2 of the datasets, and then try to answer it.
+# More questions
+As we see in the figure above, we can join the data in many more ways. Practice joining! Start by asking yourself a question that relates to 2 (or more) of the datasets, and then try to answer it.
 
 Some questions for inspiration:
 
@@ -212,11 +187,7 @@ Some questions for inspiration:
 
 
 ```{r}
-flights %>%
-  group_by(carrier) %>%
-  summarise(dist = mean(distance, na.rm= TRUE)) %>% 
-  arrange(dist) %>%
-  inner_join(airlines, by = "carrier")
+
 ```
 
 
