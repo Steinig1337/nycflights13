@@ -18,7 +18,7 @@ To separate the official version (master) from development/experimentation, crea
 
 So go through the `nycflight.Rmd` file and try to solve all the tasks described there, and additionally analyse all the questions that _you_ are interested in. 
 
-After each of the 6 sections, `commit` your changes to your development branch. For a commit you first have to `stage` the files that you want include in the commit (this choice is easy here, because there is just this Rmd file). Then you can inspect the `diff` to the last commit. Provide a meaningful commit message (such as "Add airlines section"), and press commmit. 
+After each of the sections, `commit` your changes to your development branch. For a commit you first have to `stage` the files that you want include in the commit (this choice is easy here, because there is just this Rmd file). Then you can inspect the `diff` to the last commit. Provide a meaningful commit message (such as "Add airlines section"), and press commmit. 
 
 ## 5. Push to GitHub
 Whenever you like you can `push` your changes to the `remote` GitHub repository. Verify that your changes appear in the development branch of your GitHub repository, but not in its master branch.
