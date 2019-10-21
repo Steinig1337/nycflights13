@@ -1,8 +1,7 @@
-# nycflights13
-Analysis of flights and weather data
+# Week 5 Exercise: Analysis of flights data
+This is the exercise belonging to week 5 of the course **Tools and Programming for Data Scientists** at the **University of Applied Sciences in Kiel**. This exercise is about working with Git, Github, and the R tidyverse. You should practice these topics as much as you can.
 
-
-
+The context of this exercise is an analysis of flights departing from one of the three large New York City airports. During the analysis you will use 5 different datasets named `flights`, `airports`, `airlines`, `planes` and `weather`. *First*, you will analyse them separately and build up an understanding of the data. *Second*, you will join the datasets in order to answer more advanced questions.
 
 ## 1. Fork GitHub repository
 Open https://github.com/tillschwoerer/nycflights13 and press the `fork` icon in the upper right side of the project page. Now the forked project should appear on your GitHub page in the list of your repositories. 
