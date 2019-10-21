@@ -44,16 +44,25 @@ airlines %>%
 ## Airports 
 Inspect the airports data via `View`. It contains the column `alt` which is the altitude of the airport in feet. Replace `alt` by the corresponding altitude in meters (meter = feet * 3.28084). Use the `mutate` function for this operation. You have to assign again to `airports` in order to change the data (not only print the changes).
 ```{r}
-# airports <- airports %>% mutate(alt = .....)
+view(airports)
+airports <- airports %>% mutate(alt = alt*3.28084)
 ```
 
 Filter for the 5 airports with the highest altitude
 ```{r}
+airports %>% 
+  select(name,alt) %>%
+  arrange(desc(alt)) %>%
+  top_n(n=5)
+  
 
 ```
 
 Filter for all airports which are located at an altitude lower than sea level
 ```{r}
+airports %>%
+  select(name, alt) %>%
+  filter(alt < 0)
 ```
 
 ## Weather
