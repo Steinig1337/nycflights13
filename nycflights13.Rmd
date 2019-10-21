@@ -34,6 +34,10 @@ Inspect the airlines data via `View` and print the first 5 rows.
 > Note: It is helpful to `View` the data in interactive analysis, but afterwards delete it from your script or Rmd file.
 
 ```{r}
+View(airlines)
+
+airlines %>%
+  top_n(n=5)
 
 ```
 
