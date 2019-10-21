@@ -1,4 +1,5 @@
 # Week 5 Exercise: Analysis of flights data
+wichtige Ergänzung!!!!!!
 This is the exercise belonging to week 5 of the course **Tools and Programming for Data Scientists** at the **University of Applied Sciences in Kiel**. This exercise is about working with Git, Github, and the R tidyverse. You should practice these topics as much as you can.
 
 The context of this exercise is an analysis of flights departing from one of the three large New York City airports. During the analysis you will use 5 different datasets named `flights`, `airports`, `airlines`, `planes` and `weather`. *First*, you will analyse them separately and build up an understanding of the data. *Second*, you will join the datasets in order to answer more advanced questions.
