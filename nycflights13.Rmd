@@ -171,6 +171,11 @@ planes %>%
   summarise( anzahl2 = n()) %>%
   arrange(desc(anzahl2))
 
+planes %>%
+  group_by(manufacturer, model) %>%
+  count() %>%
+  arrange(desc(n))
+
 
 ```
 
