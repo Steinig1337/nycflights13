@@ -67,7 +67,11 @@ airports %>%
 
 ## Weather
 Use `View` to inspect the data and print the first 5 rows. Does the data only cover the airports in New York, or also the weather data at destination airports? 
+It covers other destinations as well.
 ```{r}
+View(weather)
+weather %>%
+  top_n(n=5)
 
 ```
 
@@ -82,6 +86,16 @@ Let's change the units of the weather data to European standards.
 >Again, use the `mutate` function and assign the result back to `weather` in order to save the changes to the data.
 
 ```{r}
+weather <- weather %>%
+  mutate(temp = (temp-32)* 5 / 9)
+weather <- weather %>%
+  mutate(dewp = (dewp - 32) * 5 / 9)
+
+weather <- weather %>%
+  mutate(visib = visib / 1.60934) %>%
+  mutate(wind_speed = wind_speed / 1.60934) %>%
+  mutate(precip = precip * 20.54)
+weather
 
 ```
 
@@ -91,17 +105,31 @@ After such a transforation we should check whether values are plausbile:
 
 What was the 2013 average of `temp`, `wind_speed`, and `visib` at the JFK airport?
 ```{r}
+weather %>%
+  filter(year == 2013) %>%
+  group_by(origin) %>%
+  summarise( avrgtemp = mean(temp, na.rm = TRUE), avrwindspeed = mean(wind_speed, na.rm = TRUE), avrvisib = mean(visib, na.rm = TRUE))
+ 
 
 ```
 
 What was the *monthly* average of `temp`, `wind_speed`, and `visib` at the JFK airport?
 ```{r}
+weather %>%
+  filter(year == 2013, origin == 'JFK') %>%
+  group_by(origin, month) %>%
+  summarise( avrgtemp = mean(temp, na.rm = TRUE), avrwindspeed = mean(wind_speed, na.rm = TRUE), avrvisib = mean(visib, na.rm = TRUE))
 
 ```
 
 What was the minimum `temp`, the maximum `temp`, and the total amount of `precip` at each of the 3 airports in December 2013? 
 
 ```{r}
+weather %>%
+  filter(year == 2013, month == 12) %>%
+  group_by(origin) %>%
+  summarise(maxtemp = max(temp), mintemp = min(temp), sumprecip = sum(precip))
+
 
 ```
 
