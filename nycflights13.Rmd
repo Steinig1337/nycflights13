@@ -137,6 +137,9 @@ weather %>%
 ## Planes
 Look at the data via `View` and print the first 5 rows.
 ```{r}
+view(planes)
+planes %>%
+  top_n(n=5)
 ```
 
 Count the numer of planes per `manufacturer` and sort in descending order? 
@@ -144,15 +147,55 @@ Count the numer of planes per `manufacturer` and sort in descending order?
 > You can either count via `summarise(n())`, or more easily via `count()`.
 
 ```{r}
+planes %>%
+  group_by(manufacturer) %>%
+  summarise(anzahl= n()) %>%
+  arrange(desc(anzahl))
+
+planes %>% 
+  group_by(manufacturer) %>%
+  count() %>%
+  arrange(desc(n))
 ```
 
 Count the number of planes per `manufacturer` and `model` and again sort in descending order
 ```{r}
+planes %>%
+  group_by(manufacturer) %>%
+  summarise( anzahl1 = n()) %>%
+  arrange(desc(anzahl1))
+
+planes %>%
+  select(manufacturer,model) %>%
+  group_by(model) %>%
+  summarise( anzahl2 = n()) %>%
+  arrange(desc(anzahl2))
+
+
 ```
 
 Calculate per manufacturer: 1. number of planes, 2. average number of `seats`, 3. average number of `engines`, 4. average `year` when the planes where manufactured. And again order in descending order of the number of planes
 
 ```{r}
+planes %>%
+  group_by(manufacturer) %>%
+  summarise(anzahlplanes = n()) %>%
+  arrange(desc(anzahlplanes))
+
+  planes %>%
+  group_by(manufacturer) %>%
+  summarise(anzahlplanes = n(),avgrseats = mean(seats), avgengines = mean(engines), avgyear = mean(year, na.rm = TRUE)) %>%
+  arrange(desc(anzahlplanes))
+
+planes %>%
+  group_by(manufacturer) %>%
+  summarise(avgengines = mean(engines)) %>%
+  arrange(desc(avgengines))
+
+planes %>%
+  group_by(manufacturer) %>%
+  summarise(avgyear = mean(year)) %>%
+  arrange(desc(avgyear))
 
 ```
 
