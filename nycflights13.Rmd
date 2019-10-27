@@ -203,14 +203,33 @@ planes %>%
 ## Flights
 Inspect the flights data with `View` and print the first 5 rows.
 ```{r}
+view(flights)
+flights %>%
+  top_n(n=5)
 ```
 
 Let's analyse how take-off times at NYC airports vary in the course of the day. Count the total number of flights (of the whole year) per `hour` of departure.
 ```{r}
+flights %>%
+  filter(origin == 'JFK') %>%
+  group_by(hour) %>%
+  count()
+
+flights %>%
+  filter(origin == 'EWR') %>%
+  group_by(hour) %>%
+  count()
+
+
+ 
 ```
 
 Count the number of flights by destionation airport (`dest`) and arrange them in descending order.
 ```{r}
+flights %>%
+  group_by(dest) %>%
+  count() %>%
+  arrange(desc(n))
 
 ```
 
@@ -228,13 +247,27 @@ In general, an **inner join** is the strictest join type. If the codes in the ai
 A suggestion is to start with an inner join. Then we evaluate whether we lost important information through this inner join. If no, then we are just fine. If yes, we can consider a left join that preserves all flights and adds the available airport metadata. The occasions / questions where we need a full join are relatively rare.
 
 ```{r}
-# df_inner <- flights %>% inner_join(airports, by = ...)
+df_inner <- flights %>% inner_join(airports, by = c("dest" = "faa"))
+
+df_inner %>%
+  group_by(name) %>%
+  count() %>%
+  arrange(desc(n))
+
 ```
 
 ## Left join
 Did we lose information on flights. If yes, replace the inner join by a left join (where x = `flights` and y = `airports`). 
 
 ```{r}
+
+df_left <- flights %>%
+  left_join(airports, by = c("dest" = "faa"))
+
+df_left %>%
+  group_by(name) %>%
+  count() %>%
+  arrange(desc(n))
 
 ```
 
@@ -244,6 +277,13 @@ Did we lose information on flights. If yes, replace the inner join by a left joi
 Do a right join and look at the data afterwards. How many rows does the data have? Are there missing values? How do you judge this join type? How useful is it in our context?
 
 ```{r}
+df_right <- flights %>%
+  right_join(airports, by = c("dest" = "faa"))
+
+df_right %>%
+  group_by(name) %>%
+  count() %>%
+  arrange(desc(n))
 
 ```
 
@@ -262,15 +302,30 @@ As we see in the figure above, we can join the data in many more ways. Practice 
 
 Some questions for inspiration:
 
-- **Planes**: Do smaller planes (measured by the number of seats) have less departure delay?
+- **Planes**: Do smaller planes (measured by the number of seats) have less departure delay? NO!
 - **Airlines I**: 
   - **Flight distance**: Calculate the average flight distance by airline and display the top 10 airlines
-  - **Delay**: What's the average delay by airline? (But note that this will be strongly correlated with flight distance, so you may want to account for that)
+  - **Delay**: What's the average delay by airline? (But note that this will be strongly correlated with flight distance, so you may want to account for that) Done ! 
+  
+  Could Join the names of airlines
+  
 - **Weather**: How is bad weather (precipitation, low visibility, extremely low temperatures) at NYC related to departure delay? Here you need to join via 5 variables!
 - **Airports**: Visualize some routs via the longitude (`lon`) and latitude (`lat`) data in the `airports` data, and color the lines depending on the average delay. **Careful**: In order to get the location of both origin and destination airports you have to join the airports data 2 times onto the flights data. Hence, you have to be careful with the names. (Which `lon` belongs to the origin and which to the destination...?)
 
 
 ```{r}
+df_inner <- df_inner %>%
+  inner_join(planes, by = "tailnum")
+
+df_inner %>%
+  group_by(model) %>%
+  summarise( avgdepdelay = mean(dep_delay), seats= mean(seats)) %>%
+  arrange(desc(avgdepdelay))
+
+df_inner %>%
+  group_by(carrier) %>%
+  summarise(avgflightdist = mean(distance), avgdelay = mean(arr_delay, na.rm = TRUE)) %>%
+  arrange(desc(avgflightdist))
 
 ```
 
